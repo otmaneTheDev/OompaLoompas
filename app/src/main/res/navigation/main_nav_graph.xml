@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/listFragment">
+
+    <fragment
+        android:id="@+id/listFragment"
+        android:name="com.otmanethedev.oompaloopa.ui.list.ListFragment"
+        android:label="List">
+
+        <action
+            android:id="@+id/action_listFragment_to_detailFragment"
+            app:destination="@id/detailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right">
+
+            <argument
+                android:name="oompaLoompa"
+                app:argType="com.otmanethedev.oompaloompa.info.domain.models.OompaLoompa" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.otmanethedev.oompaloopa.ui.detail.DetailFragment"
+        android:label="DetailFragment">
+
+        <argument
+            android:name="oompaLoompa"
+            app:argType="com.otmanethedev.oompaloompa.info.domain.models.OompaLoompa" />
+    </fragment>
+</navigation>

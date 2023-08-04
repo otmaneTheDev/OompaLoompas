@@ -14,3 +14,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Oompa Loompa"
 include(":app")
+include(":features:info")

@@ -1,23 +1,20 @@
 plugins {
-    id("com.android.application")
+    id("com.android.library")
     id("org.jetbrains.kotlin.android")
-    id("androidx.navigation.safeargs")
     id("com.google.dagger.hilt.android")
+    id("kotlin-parcelize")
     id("kotlin-kapt")
 }
 
 android {
-    namespace = App.appId
+    namespace = "com.otmanethedev.oompaloompa.info"
     compileSdk = App.targetSDK
 
     defaultConfig {
-        applicationId = App.appId
         minSdk = App.minSDK
-        targetSdk = App.targetSDK
-        versionCode = App.versionCode
-        versionName = App.versionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -33,29 +30,18 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    buildFeatures {
-        viewBinding = true
-    }
 }
 
 dependencies {
-    // Android
-    implementation(Dependencies.coreKtx)
-    implementation(Dependencies.appCompat)
-    implementation(Dependencies.materialDesign)
-    implementation(Dependencies.constraintLayout)
-    implementation("androidx.navigation:navigation-fragment:2.6.0")
-
-    // Submodules
-    implementation(project(SubModules.featureInfo))
 
     // Hilt
     implementation(Dependencies.hiltAndroid)
     kapt(Dependencies.hiltKapt)
 
-    // Glide
-    implementation(Dependencies.glide)
-    annotationProcessor(Dependencies.glideAnotationProcessor)
+    // Retrofit
+    implementation(Dependencies.retrofit)
+    implementation(Dependencies.retrofitConverterGson)
+    implementation(Dependencies.okHttpLogging)
 
     // Testing
     testImplementation(TestDependencies.junit)
