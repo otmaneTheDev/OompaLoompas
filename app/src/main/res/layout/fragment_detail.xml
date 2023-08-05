@@ -16,7 +16,7 @@
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/btnBack"
         android:layout_width="@dimen/dimen_48"
-        android:padding="@dimen/dimen_8"
+        android:padding="@dimen/dimen_12"
         android:background="@drawable/bg_shape_rounded_48px"
         android:backgroundTint="@color/black_at_50"
         android:layout_height="@dimen/dimen_48"

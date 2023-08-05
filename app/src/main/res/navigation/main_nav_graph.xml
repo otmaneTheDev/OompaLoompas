@@ -21,6 +21,15 @@
                 android:name="oompaLoompa"
                 app:argType="com.otmanethedev.oompaloompa.info.domain.models.OompaLoompa" />
         </action>
+
+        <action
+            android:id="@+id/action_listFragment_to_filterFragment"
+            app:destination="@id/filterFragment">
+
+            <argument
+                android:name="filtersConfig"
+                app:argType="com.otmanethedev.oompaloopa.ui.filter.FilterConfig" />
+        </action>
     </fragment>
 
     <fragment
@@ -32,4 +41,14 @@
             android:name="oompaLoompa"
             app:argType="com.otmanethedev.oompaloompa.info.domain.models.OompaLoompa" />
     </fragment>
+
+    <dialog
+        android:id="@+id/filterFragment"
+        android:name="com.otmanethedev.oompaloopa.ui.filter.FilterFragment"
+        android:label="FilterFragment">
+
+        <argument
+            android:name="filtersConfig"
+            app:argType="com.otmanethedev.oompaloopa.ui.filter.FilterConfig" />
+    </dialog>
 </navigation>

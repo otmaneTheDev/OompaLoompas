@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/dimen_16">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/btnClose"
+        android:layout_width="@dimen/dimen_32"
+        android:layout_height="@dimen/dimen_32"
+        android:background="@drawable/bg_shape_rounded_48px"
+        android:backgroundTint="@color/black_at_50"
+        android:padding="@dimen/dimen_4"
+        android:src="@drawable/icon_close"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/lblGender"
+        style="@style/TextAppearance.MaterialComponents.Headline6"
+        android:layout_width="@dimen/dimen_0"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dimen_16"
+        android:text="@string/filter_screen_gender_lbl"
+        app:layout_constraintBottom_toBottomOf="@+id/btnClose"
+        app:layout_constraintEnd_toStartOf="@+id/btnClose"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnClose" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/optionsGender"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen_8"
+        app:chipSpacingVertical="@dimen/dimen_8"
+        app:layout_constraintTop_toBottomOf="@id/lblGender" />
+
+    <TextView
+        android:id="@+id/lblProfession"
+        style="@style/TextAppearance.MaterialComponents.Headline6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen_16"
+        android:text="@string/filter_screen_profession_lbl"
+        app:layout_constraintTop_toBottomOf="@id/optionsGender" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/optionsProfession"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen_8"
+        app:chipSpacingVertical="@dimen/dimen_8"
+        app:layout_constraintTop_toBottomOf="@id/lblProfession" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnClear"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="@dimen/dimen_0"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen_24"
+        android:layout_marginEnd="@dimen/dimen_8"
+        android:insetTop="@dimen/dimen_0"
+        android:insetBottom="@dimen/dimen_0"
+        android:text="@string/filter_screen_btn_clear"
+        app:cornerRadius="@dimen/dimen_48"
+        app:layout_constraintEnd_toStartOf="@id/btnConfirm"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/optionsProfession" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnConfirm"
+        style="@style/Widget.MaterialComponents.Button"
+        android:layout_width="@dimen/dimen_0"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dimen_8"
+        android:insetTop="@dimen/dimen_0"
+        android:insetBottom="@dimen/dimen_0"
+        android:text="@string/filter_screen_btn_confirm"
+        app:cornerRadius="@dimen/dimen_48"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btnClear"
+        app:layout_constraintTop_toTopOf="@id/btnClear" />
+</androidx.constraintlayout.widget.ConstraintLayout>

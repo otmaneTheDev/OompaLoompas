@@ -16,10 +16,15 @@ import com.otmanethedev.oompaloompa.info.domain.models.OompaLoompa
 import com.otmanethedev.oompaloopa.R
 import com.otmanethedev.oompaloopa.databinding.ItemOompaLoompaBinding
 
-
 class OompaLoompaRvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var items: List<OompaLoompa> = emptyList()
+        set(value) {
+            field = value
+            filteredItems = value
+        }
+
+    var filteredItems = listOf<OompaLoompa>()
         @SuppressLint("NotifyDataSetChanged")
         set(value) {
             field = value
@@ -34,11 +39,11 @@ class OompaLoompaRvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val item = items[position]
+        val item = filteredItems[position]
         (holder as OompaLoompaViewHolder).bind(item)
     }
 
-    override fun getItemCount(): Int = items.size
+    override fun getItemCount(): Int = filteredItems.size
 
     inner class OompaLoompaViewHolder(private val binding: ItemOompaLoompaBinding) : RecyclerView.ViewHolder(binding.root) {
         private val context by lazy { binding.root.context }

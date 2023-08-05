@@ -3,9 +3,16 @@
     <string name="oompaloompa_full_name">%s %s</string>
     <string name="oompaloompa_id">ID: %d</string>
 
+    <string name="list_screen_filter">Filter</string>
+
     <string name="detail_screen_lbl_email">Email</string>
     <string name="detail_screen_lbl_age">Age</string>
     <string name="detail_screen_lbl_description">Description</string>
+
+    <string name="filter_screen_gender_lbl">Gender</string>
+    <string name="filter_screen_profession_lbl">Profession</string>
+    <string name="filter_screen_btn_clear">Clear</string>
+    <string name="filter_screen_btn_confirm">Filter</string>
 
     <string name="error_unable_to_load_list">Unable to load oompa loompas</string>
     <string name="error_unable_to_load_details">Unable to load oompa loompa details</string>
