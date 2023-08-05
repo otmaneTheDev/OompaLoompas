@@ -44,5 +44,6 @@ dependencies {
     implementation(Dependencies.okHttpLogging)
 
     // Testing
+    testImplementation(TestDependencies.mockk)
     testImplementation(TestDependencies.junit)
 }

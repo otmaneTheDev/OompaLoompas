@@ -1,6 +1,7 @@
 package com.otmanethedev.oompaloompa.info.data.models
 
 import androidx.annotation.Keep
+import com.otmanethedev.oompaloompa.info.domain.models.OompaLoompa
 
 @Keep
 data class OompaLoompaDto(
@@ -19,7 +20,7 @@ data class OompaLoompaDto(
     val description: String?
 )
 
-fun OompaLoompaDto.toDomain() = com.otmanethedev.oompaloompa.info.domain.models.OompaLoompa(
+fun OompaLoompaDto.toDomain() = OompaLoompa(
     id,
     age,
     country,

@@ -30,6 +30,9 @@ object Dependencies {
 }
 
 object TestDependencies {
+    // Mockk
+    const val mockk = "io.mockk:mockk:1.12.0"
+
     // JUnit
     const val junit = "junit:junit:4.13.2"
 }
