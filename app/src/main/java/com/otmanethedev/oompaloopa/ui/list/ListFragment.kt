@@ -1,7 +1,7 @@
 package com.otmanethedev.oompaloopa.ui.list
 
-import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
@@ -14,8 +14,10 @@ import com.otmanethedev.oompaloopa.R
 import com.otmanethedev.oompaloopa.databinding.FragmentListBinding
 import com.otmanethedev.oompaloopa.ui.MainViewModel
 import com.otmanethedev.oompaloopa.ui.filter.FilterConfig
-import com.otmanethedev.oompaloopa.utils.BaseFragment
+import com.otmanethedev.oompaloopa.ui.list.ListViewModel.Companion.ONE
+import com.otmanethedev.oompaloopa.ui.list.ListViewModel.ListEvent
 import com.otmanethedev.oompaloopa.ui.list.adapter.OompaLoompaRvAdapter
+import com.otmanethedev.oompaloopa.utils.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -34,6 +36,12 @@ class ListFragment : BaseFragment<FragmentListBinding>() {
 
     override fun setUpUi() {
         binding.rvOompaLoompas.adapter = rvAdapter
+
+        rvAdapter.lazyLoadThreshold = LAZY_LOADING_THRESHOLD
+        rvAdapter.lazyLoadingEnabled = true
+        rvAdapter.onLazyLoadListener = {
+            viewModel.handleEvent(ListEvent.LoadMoreItems)
+        }
 
         rvAdapter.itemClickListener = {
             navigate(ListFragmentDirections.actionListFragmentToDetailFragment(it))
@@ -59,9 +67,9 @@ class ListFragment : BaseFragment<FragmentListBinding>() {
                 viewModel.uiState.collect {
                     when (it) {
                         ListViewModel.ListUiState.Idle -> Unit
-                        ListViewModel.ListUiState.Loading -> handeLoading()
+                        ListViewModel.ListUiState.Loading -> handeLoading(true)
                         is ListViewModel.ListUiState.Error -> handleError(it.error)
-                        is ListViewModel.ListUiState.Success -> handleSuccess(it.items)
+                        is ListViewModel.ListUiState.Success -> handleSuccess(it.page, it.items)
                     }
                 }
             }
@@ -82,9 +90,8 @@ class ListFragment : BaseFragment<FragmentListBinding>() {
     private fun filterList(filterConfig: FilterConfig) {
         rvAdapter.filteredItems = rvAdapter.items.filter {
             filterByGenderAndProfession(it, filterConfig)
-        }
+        }.toMutableList()
         previousFilterConfig = filterConfig
-        Log.e("XXXX", "filterList: $previousFilterConfig", );
     }
 
     private fun filterByGenderAndProfession(item: OompaLoompa, filterConfig: FilterConfig): Boolean {
@@ -94,15 +101,25 @@ class ListFragment : BaseFragment<FragmentListBinding>() {
         return isInGender && isInProfessions
     }
 
-    private fun handeLoading() {
-
+    private fun handeLoading(show: Boolean) {
+        binding.layoutLoading.visibility = if (show) View.VISIBLE else View.GONE
     }
 
-    private fun handleSuccess(items: List<OompaLoompa>) {
-        rvAdapter.items = items
+    private fun handleSuccess(page: Int, items: List<OompaLoompa>) {
+        if (page == ONE) {
+            binding.rvOompaLoompas.visibility = View.VISIBLE
+            rvAdapter.items = items.toMutableList()
+        } else {
+            rvAdapter.appendItems(items)
+        }
+        handeLoading(false)
     }
 
     private fun handleError(error: Throwable) {
         Toast.makeText(requireContext(), getString(R.string.error_unable_to_load_list), Toast.LENGTH_SHORT).show()
+    }
+
+    companion object {
+        private const val LAZY_LOADING_THRESHOLD = 5
     }
 }

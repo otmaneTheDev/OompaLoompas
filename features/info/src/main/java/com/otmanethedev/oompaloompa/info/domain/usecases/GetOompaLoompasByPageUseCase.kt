@@ -3,6 +3,7 @@ package com.otmanethedev.oompaloompa.info.domain.usecases
 import com.otmanethedev.oompaloompa.info.domain.repository.OompaLoompasRepository
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 class GetOompaLoompasByPageUseCase @Inject constructor(
@@ -10,6 +11,7 @@ class GetOompaLoompasByPageUseCase @Inject constructor(
 ) {
 
     suspend operator fun invoke(page: Int) = withContext(Dispatchers.IO) {
+        delay(8000)
         repository.getOompaLoompasByPage(page)
     }
 }

@@ -19,20 +19,26 @@ import com.otmanethedev.oompaloopa.databinding.ItemOompaLoompaBinding
 
 class OompaLoompaRvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    var items: List<OompaLoompa> = emptyList()
+    var items: MutableList<OompaLoompa> = mutableListOf()
         set(value) {
             field = value
             filteredItems = value
         }
 
-    var filteredItems = listOf<OompaLoompa>()
+    var filteredItems = mutableListOf<OompaLoompa>()
         @SuppressLint("NotifyDataSetChanged")
         set(value) {
             field = value
             notifyDataSetChanged()
         }
 
+    var lazyLoadingEnabled = false
+
+    var lazyLoadThreshold: Int = items.size
+
     var itemClickListener: (OompaLoompa) -> Unit = {}
+
+    var onLazyLoadListener: () -> Unit = {}
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OompaLoompaViewHolder {
         val binding = ItemOompaLoompaBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -40,11 +46,18 @@ class OompaLoompaRvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val item = filteredItems[position]
-        (holder as OompaLoompaViewHolder).bind(item)
+        if (lazyLoadingEnabled && position == items.size - lazyLoadThreshold) {
+            onLazyLoadListener.invoke()
+        }
+        (holder as OompaLoompaViewHolder).bind(filteredItems[position])
     }
 
     override fun getItemCount(): Int = filteredItems.size
+
+    fun appendItems(newItems: List<OompaLoompa>) {
+        items.addAll(newItems)
+        notifyItemRangeInserted(items.size - newItems.size, items.size)
+    }
 
     inner class OompaLoompaViewHolder(private val binding: ItemOompaLoompaBinding) : RecyclerView.ViewHolder(binding.root) {
         private val context by lazy { binding.root.context }
