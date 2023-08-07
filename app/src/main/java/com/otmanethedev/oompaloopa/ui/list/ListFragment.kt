@@ -11,6 +11,7 @@ import com.otmanethedev.oompaloopa.databinding.FragmentListBinding
 import com.otmanethedev.oompaloopa.ui.MainViewModel
 import com.otmanethedev.oompaloopa.ui.filter.FilterConfig
 import com.otmanethedev.oompaloopa.ui.list.adapter.OompaLoompaAdapter
+import com.otmanethedev.oompaloopa.ui.list.adapter.OompaLoompaLoadStateAdapter
 import com.otmanethedev.oompaloopa.utils.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -22,6 +23,7 @@ class ListFragment : BaseFragment<FragmentListBinding>() {
     private val mainViewModel by activityViewModels<MainViewModel>()
     private val viewModel: ListViewModel by viewModels()
 
+    private val loadStateAdapter by lazy { OompaLoompaLoadStateAdapter() }
     private val adapter by lazy { OompaLoompaAdapter() }
     private var previousFilterConfig: FilterConfig? = null
 
@@ -30,7 +32,8 @@ class ListFragment : BaseFragment<FragmentListBinding>() {
     }
 
     override fun setUpUi() {
-        binding.rvOompaLoompas.adapter = adapter
+        binding.rvOompaLoompas.adapter = adapter.withLoadStateFooter(loadStateAdapter)
+
         adapter.itemClickListener = {
             navigate(ListFragmentDirections.actionListFragmentToDetailFragment(it))
         }
