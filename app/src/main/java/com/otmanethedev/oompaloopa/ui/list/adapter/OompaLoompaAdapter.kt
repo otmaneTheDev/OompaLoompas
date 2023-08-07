@@ -1,11 +1,12 @@
 package com.otmanethedev.oompaloopa.ui.list.adapter
 
-import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.graphics.drawable.toBitmap
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -17,52 +18,37 @@ import com.otmanethedev.oompaloompa.info.domain.models.OompaLoompa
 import com.otmanethedev.oompaloopa.R
 import com.otmanethedev.oompaloopa.databinding.ItemOompaLoompaBinding
 
-class OompaLoompaRvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-    var items: MutableList<OompaLoompa> = mutableListOf()
-        set(value) {
-            field = value
-            filteredItems = value
-        }
-
-    var filteredItems = mutableListOf<OompaLoompa>()
-        @SuppressLint("NotifyDataSetChanged")
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
-
-    var lazyLoadingEnabled = false
-
-    var lazyLoadThreshold: Int = items.size
+class OompaLoompaAdapter : PagingDataAdapter<OompaLoompa, OompaLoompaAdapter.OompaLoompaViewHolder>(ARTICLE_DIFF_CALLBACK) {
 
     var itemClickListener: (OompaLoompa) -> Unit = {}
-
-    var onLazyLoadListener: () -> Unit = {}
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OompaLoompaViewHolder {
         val binding = ItemOompaLoompaBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return OompaLoompaViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (lazyLoadingEnabled && position == items.size - lazyLoadThreshold) {
-            onLazyLoadListener.invoke()
+    override fun onBindViewHolder(holder: OompaLoompaViewHolder, position: Int) {
+        val item = getItem(position)
+        if (item != null) {
+            holder.bind(item)
         }
-        (holder as OompaLoompaViewHolder).bind(filteredItems[position])
     }
 
-    override fun getItemCount(): Int = filteredItems.size
+    companion object {
+        private val ARTICLE_DIFF_CALLBACK = object : DiffUtil.ItemCallback<OompaLoompa>() {
+            override fun areItemsTheSame(oldItem: OompaLoompa, newItem: OompaLoompa): Boolean =
+                oldItem.id == newItem.id
 
-    fun appendItems(newItems: List<OompaLoompa>) {
-        items.addAll(newItems)
-        notifyItemRangeInserted(items.size - newItems.size, items.size)
+            override fun areContentsTheSame(oldItem: OompaLoompa, newItem: OompaLoompa): Boolean =
+                oldItem == newItem
+        }
     }
 
     inner class OompaLoompaViewHolder(private val binding: ItemOompaLoompaBinding) : RecyclerView.ViewHolder(binding.root) {
         private val context by lazy { binding.root.context }
 
         fun bind(item: OompaLoompa) {
+            binding.txtProfession.text = item.profession
             binding.txtName.text = context.getString(R.string.oompaloompa_full_name, item.firstName, item.lastName)
             binding.txtId.text = context.getString(R.string.oompaloompa_id, item.id)
             configureImageAndBg(item.image)

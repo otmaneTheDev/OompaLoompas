@@ -1,24 +1,19 @@
 package com.otmanethedev.oompaloopa.ui.list
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.otmanethedev.oompaloompa.info.domain.models.OompaLoompa
-import com.otmanethedev.oompaloopa.R
 import com.otmanethedev.oompaloopa.databinding.FragmentListBinding
 import com.otmanethedev.oompaloopa.ui.MainViewModel
 import com.otmanethedev.oompaloopa.ui.filter.FilterConfig
-import com.otmanethedev.oompaloopa.ui.list.ListViewModel.Companion.ONE
-import com.otmanethedev.oompaloopa.ui.list.ListViewModel.ListEvent
-import com.otmanethedev.oompaloopa.ui.list.adapter.OompaLoompaRvAdapter
+import com.otmanethedev.oompaloopa.ui.list.adapter.OompaLoompaAdapter
 import com.otmanethedev.oompaloopa.utils.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -27,7 +22,7 @@ class ListFragment : BaseFragment<FragmentListBinding>() {
     private val mainViewModel by activityViewModels<MainViewModel>()
     private val viewModel: ListViewModel by viewModels()
 
-    private val rvAdapter by lazy { OompaLoompaRvAdapter() }
+    private val adapter by lazy { OompaLoompaAdapter() }
     private var previousFilterConfig: FilterConfig? = null
 
     override fun setBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentListBinding {
@@ -35,25 +30,15 @@ class ListFragment : BaseFragment<FragmentListBinding>() {
     }
 
     override fun setUpUi() {
-        binding.rvOompaLoompas.adapter = rvAdapter
-
-        rvAdapter.lazyLoadThreshold = LAZY_LOADING_THRESHOLD
-        rvAdapter.lazyLoadingEnabled = true
-        rvAdapter.onLazyLoadListener = {
-            viewModel.handleEvent(ListEvent.LoadMoreItems)
-        }
-
-        rvAdapter.itemClickListener = {
+        binding.rvOompaLoompas.adapter = adapter
+        adapter.itemClickListener = {
             navigate(ListFragmentDirections.actionListFragmentToDetailFragment(it))
         }
 
         binding.btnFilter.setOnClickListener {
-            val genders = rvAdapter.items.mapNotNull { it.gender }.distinct()
-            val professions = rvAdapter.items.mapNotNull { it.profession }.distinct()
-
             val filtersConfig = FilterConfig(
-                genders,
-                professions,
+                possibleGenders,
+                possibleProfessions,
                 previousFilterConfig?.previousSelectedGenders,
                 previousFilterConfig?.previousSelectedProfessions
             )
@@ -64,20 +49,7 @@ class ListFragment : BaseFragment<FragmentListBinding>() {
     override fun setUpObservers() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState.collect {
-                    when (it) {
-                        ListViewModel.ListUiState.Idle -> Unit
-                        ListViewModel.ListUiState.Loading -> handeLoading(true)
-                        is ListViewModel.ListUiState.Error -> handleError(it.error)
-                        is ListViewModel.ListUiState.Success -> handleSuccess(it.page, it.items)
-                    }
-                }
-            }
-        }
-
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                mainViewModel.filterEvent.collect {
+                mainViewModel.filterEvent.collectLatest {
                     when (it) {
                         MainViewModel.FilterEvent.Idle -> Unit
                         is MainViewModel.FilterEvent.Filter -> filterList(it.filterConfig)
@@ -85,41 +57,23 @@ class ListFragment : BaseFragment<FragmentListBinding>() {
                 }
             }
         }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.filteredOompaLoompas.collectLatest {
+                    adapter.submitData(it)
+                }
+            }
+        }
     }
 
     private fun filterList(filterConfig: FilterConfig) {
-        rvAdapter.filteredItems = rvAdapter.items.filter {
-            filterByGenderAndProfession(it, filterConfig)
-        }.toMutableList()
+        viewModel.applyFilterConfig(filterConfig)
         previousFilterConfig = filterConfig
     }
 
-    private fun filterByGenderAndProfession(item: OompaLoompa, filterConfig: FilterConfig): Boolean {
-        val isInProfessions = item.profession in filterConfig.professionOptions || filterConfig.professionOptions.isEmpty()
-        val isInGender = item.gender in filterConfig.genderOptions || filterConfig.genderOptions.isEmpty()
-
-        return isInGender && isInProfessions
-    }
-
-    private fun handeLoading(show: Boolean) {
-        binding.layoutLoading.visibility = if (show) View.VISIBLE else View.GONE
-    }
-
-    private fun handleSuccess(page: Int, items: List<OompaLoompa>) {
-        if (page == ONE) {
-            binding.rvOompaLoompas.visibility = View.VISIBLE
-            rvAdapter.items = items.toMutableList()
-        } else {
-            rvAdapter.appendItems(items)
-        }
-        handeLoading(false)
-    }
-
-    private fun handleError(error: Throwable) {
-        Toast.makeText(requireContext(), getString(R.string.error_unable_to_load_list), Toast.LENGTH_SHORT).show()
-    }
-
     companion object {
-        private const val LAZY_LOADING_THRESHOLD = 5
+        private val possibleGenders = listOf("F", "M")
+        private val possibleProfessions = listOf("Brewer", "Metalworker", "Developer", "Gemcutter", "Medic")
     }
 }

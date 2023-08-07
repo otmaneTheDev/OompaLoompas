@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-class OompaLoompa(
+data class OompaLoompa(
     val id: Int,
     val age: Int?,
     val country: String?,
