@@ -45,7 +45,7 @@ dependencies {
     implementation(Dependencies.appCompat)
     implementation(Dependencies.materialDesign)
     implementation(Dependencies.constraintLayout)
-    implementation("androidx.navigation:navigation-fragment:2.6.0")
+    implementation(Dependencies.navigation)
 
     // Submodules
     implementation(project(SubModules.featureInfo))
@@ -58,8 +58,10 @@ dependencies {
     implementation(Dependencies.glide)
     annotationProcessor(Dependencies.glideAnotationProcessor)
 
-     implementation("androidx.paging:paging-common-ktx:3.2.0")
-     implementation("androidx.paging:paging-runtime-ktx:3.2.0")
+    // Paging 3
+    implementation(Dependencies.pagingCommon)
+    implementation(Dependencies.pagingRutime)
+
     // Testing
     testImplementation(TestDependencies.junit)
 }

@@ -12,7 +12,7 @@ object Dependencies {
     const val appCompat = "androidx.appcompat:appcompat:1.6.1"
     const val materialDesign = "com.google.android.material:material:1.9.0"
     const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.1.4"
-
+    const val navigation = "androidx.navigation:navigation-fragment:2.6.0"
     // Hilt
     const val hiltAndroid = "com.google.dagger:hilt-android:2.44.2"
     const val hiltKapt = "com.google.dagger:hilt-compiler:2.44.2"
@@ -23,6 +23,10 @@ object Dependencies {
 
     // OkHttp logging
     const val okHttpLogging = "com.squareup.okhttp3:logging-interceptor:4.9.3"
+
+    // Paging 3
+    const val pagingCommon = "androidx.paging:paging-common-ktx:3.2.0"
+    const val pagingRutime = "androidx.paging:paging-runtime-ktx:3.2.0"
 
     // Glide
     const val glide = "com.github.bumptech.glide:glide:4.15.0"
