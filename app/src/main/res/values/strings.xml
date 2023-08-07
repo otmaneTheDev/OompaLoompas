@@ -4,6 +4,7 @@
     <string name="oompaloompa_id">ID: %d</string>
 
     <string name="list_screen_filter">Filter</string>
+    <string name="list_screen_loading_text">Loading items...</string>
 
     <string name="detail_screen_lbl_email">Email</string>
     <string name="detail_screen_lbl_age">Age</string>

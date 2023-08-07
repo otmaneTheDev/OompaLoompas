@@ -2,44 +2,43 @@ package com.otmanethedev.oompaloopa.ui.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.filter
 import com.otmanethedev.oompaloompa.info.domain.models.OompaLoompa
-import com.otmanethedev.oompaloompa.info.domain.usecases.GetOompaLoompasByPageUseCase
+import com.otmanethedev.oompaloompa.info.domain.usecases.GetOompaLoompasUseCase
+import com.otmanethedev.oompaloopa.ui.filter.FilterConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.combine
 
 @HiltViewModel
 class ListViewModel @Inject constructor(
-    private val getOompaLoompasByPageUseCase: GetOompaLoompasByPageUseCase
+    getOompaLoompasUseCase: GetOompaLoompasUseCase
 ) : ViewModel() {
 
-    sealed class ListUiState {
-        object Idle : ListUiState()
-        object Loading : ListUiState()
-        class Error(val error: Throwable) : ListUiState()
-        class Success(val items: List<OompaLoompa>) : ListUiState()
-    }
+    private val _filterConfig = MutableStateFlow(FilterConfig(listOf(), listOf()))
+    private val filterConfig: StateFlow<FilterConfig> = _filterConfig
 
-    private val _uiState: MutableStateFlow<ListUiState> = MutableStateFlow(ListUiState.Idle)
-    val uiState: StateFlow<ListUiState> get() = _uiState.asStateFlow()
+    private val oompaLoompas: Flow<PagingData<OompaLoompa>> = getOompaLoompasUseCase.getOompaLoompas().cachedIn(viewModelScope)
 
-    private var currentPage: Int = 1
-
-    init {
-        fetchOompaloompasByPageUseCase(currentPage)
-    }
-
-    private fun fetchOompaloompasByPageUseCase(page: Int) {
-        viewModelScope.launch {
-            getOompaLoompasByPageUseCase.invoke(page).onSuccess {
-                _uiState.value = ListUiState.Success(it.oompaLoompas)
-                currentPage = it.current
-            }.onFailure {
-                _uiState.value = ListUiState.Error(it)
-            }
+    val filteredOompaLoompas: Flow<PagingData<OompaLoompa>> = combine(oompaLoompas, filterConfig) { oompaLoompas, filterConfig ->
+        oompaLoompas.filter {
+            filterByGenderAndProfession(it, filterConfig)
         }
+    }.cachedIn(viewModelScope)
+
+    fun applyFilterConfig(filterConfig: FilterConfig) {
+        _filterConfig.value = filterConfig
+    }
+
+    private fun filterByGenderAndProfession(item: OompaLoompa, filterConfig: FilterConfig): Boolean {
+        val isInProfessions = item.profession in filterConfig.professionOptions || filterConfig.professionOptions.isEmpty()
+        val isInGender = item.gender in filterConfig.genderOptions || filterConfig.genderOptions.isEmpty()
+
+        return isInGender && isInProfessions
     }
 }
